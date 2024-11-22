@@ -15,6 +15,6 @@ Delta_P = 0.5 * rho_air * U^2;
 % Calculate manometer height (h)
 h = Delta_P / (rho_manometer * g);
 
-% Display results
+
 fprintf('Required wind speed: %.2f m/s\n', U);
 fprintf('Manometer reading: %.2f mm\n', h * 1000); % Convert to mm
