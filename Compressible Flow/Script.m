@@ -31,3 +31,61 @@ Atmospheric_temperature=       ;          %(degrees)
 
 %Using 'stream-wise variation of normalised static pressure through the tunnel for each value of stagnation pressure tested'(2? not quite sure here) plot estimate the normal shock strength
 %Annotate your pressure graph with the expected inviscid pressure rises for the transonic (based on your previous estimate of shock strength)
+
+
+
+%%
+%calculation
+gData = importdata('icswtgeometryMach2.csv');
+geo=gData.data(:,:);
+%show geometry
+x=geo(:,1);
+h=geo(:,2);
+h_u=h/2;
+h_l=-h/2;
+figure
+plot(x,h_u,LineWidth=2,Color="b")
+hold on
+plot(x,h_l,LineWidth=2,Color="b")
+axis('equal')
+hold off
+
+%Calculate Mach number with num-method
+for i=1:length(h)
+ area_ratio = h(i)/min(h);      
+ f = @(M) (1/M) * 0.5787 * (1 + 0.2 * M^2)^3 - area_ratio; 
+
+ M_sub(i) = fzero(f, [0.0001, 0.9999]);
+
+ M_super(i) = fzero(f, [1.0001, 10]);
+end
+M1=find(h==min(h));
+
+%Calculate normalised pressure
+PperP0_1=(1+0.4/2*M_sub.^2).^(-1.4/0.4);
+PperP0_2=(1+0.4/2*M_super.^2).^(-1.4/0.4);
+%repair 
+Prfsub2sup=[PperP0_1(1:M1(1)),PperP0_2(M1(2):end)];
+Prfsup2sub=[PperP0_2(1:M1(1)),PperP0_1(M1(2):end)];
+Prfsub2sub_special=PperP0_1;
+figure
+%subsonic to supersonic case
+plot(x,Prfsub2sup,LineWidth=2,Color='r')
+hold on
+%supersonic to subsonic case
+plot(x,Prfsup2sub,LineWidth=2,Color='b')
+%supersonic to subsonic case with M at A* equals 1
+plot(x,Prfsub2sub_special,LineWidth=1,LineStyle=":",Color='y')
+%extra case where in all stage the flow is subsonic
+M1=0.25;
+for i=1:length(h)
+ area_ratio = h(i)/h(1);      
+ f = @(M) (1/M) * 0.5787 * (1 + 0.2 * M^2)^3/((1/M1) * 0.5787 * (1 + 0.2 * M1^2)^3) - area_ratio; 
+
+ M_Sub2(i) = fzero(f, [0.0001, 0.9999]);
+end
+Prfsub2sub=(1+0.4/2*M_Sub2.^2).^(-1.4/0.4);
+plot(x,Prfsub2sub,LineWidth=1,Color='k')
+
+legend('subsonic to supersonic case','supersonic to subsonic case', ...
+    'supersonic to subsonic case with M at A* equals 1','supersonic to subsonic case normal')
