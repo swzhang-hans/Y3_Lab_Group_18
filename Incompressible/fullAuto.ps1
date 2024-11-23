@@ -1,3 +1,7 @@
+# IMPORTANT:
+# 1. move to the correct top level directory
+# 2. make sure the input files are edited correctly, e.g. pitch angle...
+
 # Get the current directory
 $currentDir = Get-Location
 
@@ -9,6 +13,12 @@ $targetBaseDir = Join-Path $currentDir "discretisation"
 if (!(Test-Path $targetBaseDir)) {
     New-Item -ItemType Directory -Path $targetBaseDir
 }
+
+# Path to the log file
+$logFile = "runtimes.log"
+
+# Ensure the log file is empty or create it if it doesn't exist
+Set-Content -Path $logFile -Value ""
 
 # Loop through m (1 to 30) and n (1 to 20)
 for ($m = 1; $m -le 30; $m++) {
@@ -57,17 +67,27 @@ for ($m = 1; $m -le 30; $m++) {
         $rootInc
         $spanwise
 "@
-
+        
         # Run the Fortran executable with the input data piped to it
         $inputData | & $fortranExecutable
 
         Write-Host "Fortran executable has finished running."
+
+        # measure the computation time for running the panel code
+        $runtime = Measure-Command {
 
         # Define the path to the Fortran executable
         $fortranExecutable2 = Join-Path -Path $folderPath -ChildPath "combo.exe"
 
         # Run the Fortran executable with the input data piped to it
         & $fortranExecutable2
+
+        }
+
+        $runtime = $runtime.TotalSeconds
+
+        # output the computation time
+        Add-Content -Path $logFile -Value $runtime
 
         Write-Host "Fortran executable 2 has finished running."
 
