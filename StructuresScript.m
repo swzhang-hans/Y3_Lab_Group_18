@@ -1,5 +1,6 @@
 clc
 clear
+%complex one
 A1=8478*10^(-6);%m^2
 A2=24628*10^(-6);
 G=28*10^(9);%Pa
@@ -26,3 +27,14 @@ front_spar=double((solq2-solq1)/t18i/G)
 top_skin=double(solq2/t23/G)
 rear_spar=double(solq2/t36/G)
 
+%%
+%buckling
+E=73.1*10^(9);
+L=4000*10^(-3);%mm
+I=897142.8*10^(-12);%mm^4
+K=2;
+v=0.305;
+b=200*10^(-3);
+t=0.8*10^(-3);
+Pcr=(pi^2*E*I)/(K*L)
+ecr=(pi^2*E)/((b/t)^2*(1-v^2))
