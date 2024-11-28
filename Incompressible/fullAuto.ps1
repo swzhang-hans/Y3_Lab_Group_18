@@ -1,3 +1,7 @@
+# IMPORTANT:
+# 1. move to the correct top level directory
+# 2. make sure the input files are edited correctly, e.g. pitch angle...
+
 # Get the current directory
 $currentDir = Get-Location
 
@@ -10,9 +14,20 @@ if (!(Test-Path $targetBaseDir)) {
     New-Item -ItemType Directory -Path $targetBaseDir
 }
 
+# Path to the log file
+$logFile = Join-Path $targetBaseDir "runtimes.log"
+
+# Check if the log file exists; create it if it doesn't
+if (!(Test-Path $logFile)) {
+    New-Item -ItemType File -Path $logFile -Force | Out-Null
+}
+
+# Clear the log file to ensure it's empty
+Set-Content -Path $logFile -Value ""
+
 # Loop through m (1 to 30) and n (1 to 20)
-for ($m = 1; $m -le 30; $m++) {
-    for ($n = 1; $n -le 20; $n++) {
+for ($m = 1; $m -le 3; $m++) {
+    for ($n = 1; $n -le 2; $n++) {
         # Construct folder name c$(m)-s$(n)
         $folderName = "c$($m)-s$($n)"
         $folderPath = Join-Path $targetBaseDir $folderName
@@ -57,17 +72,27 @@ for ($m = 1; $m -le 30; $m++) {
         $rootInc
         $spanwise
 "@
-
+        
         # Run the Fortran executable with the input data piped to it
         $inputData | & $fortranExecutable
 
         Write-Host "Fortran executable has finished running."
+
+        # measure the computation time for running the panel code
+        $runtime = Measure-Command {
 
         # Define the path to the Fortran executable
         $fortranExecutable2 = Join-Path -Path $folderPath -ChildPath "combo.exe"
 
         # Run the Fortran executable with the input data piped to it
         & $fortranExecutable2
+
+        }
+
+        $runtime = $runtime.TotalSeconds
+
+        # output the computation time
+        Add-Content -Path $logFile -Value $runtime
 
         Write-Host "Fortran executable 2 has finished running."
 
