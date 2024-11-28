@@ -6,8 +6,8 @@ close all
 %%
 %set input
 runtime="      "           ;               %e.g."2024-02-16_16-46-38" (a list of number on name of auto-output csv,repersent time)
-Atmospheric_pressure=       ;             %(bar)
-Atmospheric_temperature=       ;          %(degrees)
+Atmospheric_pressure=   (99.56/101.325)    ;             %(bar)
+Atmospheric_temperature=   22.68    ;          %(degrees)
 
 %%
 %use the function given *(Processing function – supersoniclab2024.m) to analyze the data
