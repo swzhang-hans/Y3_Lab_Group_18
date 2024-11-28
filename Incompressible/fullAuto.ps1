@@ -15,14 +15,19 @@ if (!(Test-Path $targetBaseDir)) {
 }
 
 # Path to the log file
-$logFile = "runtimes.log"
+$logFile = Join-Path $targetBaseDir "runtimes.log"
 
-# Ensure the log file is empty or create it if it doesn't exist
+# Check if the log file exists; create it if it doesn't
+if (!(Test-Path $logFile)) {
+    New-Item -ItemType File -Path $logFile -Force | Out-Null
+}
+
+# Clear the log file to ensure it's empty
 Set-Content -Path $logFile -Value ""
 
 # Loop through m (1 to 30) and n (1 to 20)
-for ($m = 1; $m -le 30; $m++) {
-    for ($n = 1; $n -le 20; $n++) {
+for ($m = 1; $m -le 3; $m++) {
+    for ($n = 1; $n -le 2; $n++) {
         # Construct folder name c$(m)-s$(n)
         $folderName = "c$($m)-s$($n)"
         $folderPath = Join-Path $targetBaseDir $folderName
