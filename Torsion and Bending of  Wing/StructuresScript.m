@@ -35,6 +35,19 @@ rear_spar=double(solq2/t36*G);
 
 
 %%
+I_xx = 8.971428*10^-7;
+E = 73.1*10^9;
+L = 2;
 
-Tip_deflection = (P * 2^3) / (3 * (8.971428*10^-7) * (73.1*10^9));
+Tip_deflection = (50 * L^3) / (3 * (I_xx) * (E));
+
+sigma_max_root = (50 * 2000 * 40*10^-3) / I_xx;
+
+L_eff = 4 * L;
+
+P_crit = (pi ^ 2 * E * I_xx) / (L_eff)^2;
+
+
+
+
 
